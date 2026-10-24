@@ -916,7 +916,9 @@
                     }
                 };
 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                const modelName = 'gemini-1.5-flash'; // Change this to whichever model you want to use
+const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+
 
                 try {
                     const response = await fetch(apiUrl, {
