@@ -1,0 +1,1481 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAMB Excellence Tutorial - Ultimate CBT Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        jamb: {
+                            green: '#008751',
+                            darkgreen: '#005c37',
+                            lightgreen: '#e6f4ed',
+                            gold: '#FFD700',
+                            goldhover: '#d4af37',
+                            darkbg: '#0f172a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #008751; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #005c37; }
+        .cbt-option-radio:checked + label {
+            border-color: #008751;
+            background-color: #e6f4ed;
+            font-weight: 600;
+        }
+        .palette-btn {
+            font-size: 10px;
+            font-weight: 700;
+            transition: all 0.15s ease;
+        }
+        @keyframes timer-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.02); }
+        }
+        .timer-warning {
+            animation: timer-pulse 1s infinite;
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen font-sans">
+
+    <!-- HEADER / BRANDING BANNER -->
+    <header class="bg-jamb-green text-white shadow-lg sticky top-0 z-50 border-b-2 border-jamb-gold">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 bg-white rounded-full flex items-center justify-center text-jamb-green shadow-md border-2 border-jamb-gold">
+                    <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
+                        JAMB Excellence Tutorial
+                        <span class="bg-jamb-gold text-black font-extrabold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider">180-Q UTME CBT</span>
+                    </h1>
+                    <p class="text-xs text-emerald-100 font-medium">Ultimate CBT Portal & AI Generator (Full 4-Subject Combinations)</p>
+                </div>
+            </div>
+
+            <!-- ROLE SWITCHER & STATS BADGES -->
+            <div class="flex items-center space-x-3 self-end md:self-auto">
+                <div class="hidden sm:flex items-center gap-3 mr-2 text-xs">
+                    <div class="bg-jamb-darkgreen px-3 py-1.5 rounded-lg border border-emerald-600/40">
+                        <span class="text-emerald-200">Bank Pool:</span>
+                        <strong id="hdr-stat-bank" class="text-white ml-1">0 / 180 Qs</strong>
+                    </div>
+                    <div class="bg-jamb-darkgreen px-3 py-1.5 rounded-lg border border-emerald-600/40">
+                        <span class="text-emerald-200">Exams:</span>
+                        <strong id="hdr-stat-quizzes" class="text-jamb-gold ml-1">0 Active</strong>
+                    </div>
+                </div>
+
+                <div class="bg-jamb-darkgreen p-1 rounded-xl flex items-center border border-emerald-600/40 shadow-inner">
+                    <button id="nav-admin-btn" onclick="switchRole('admin')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-white bg-jamb-green shadow">
+                        <i class="fa-solid fa-user-gear"></i> Instructor
+                    </button>
+                    <button id="nav-student-btn" onclick="switchRole('student')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-emerald-200 hover:text-white">
+                        <i class="fa-solid fa-laptop-code"></i> CBT Student
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFICATION TOAST CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-md w-full px-4 pointer-events-none"></div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: INSTRUCTOR PORTAL (ADMIN & CREATOR) -->
+        <!-- ========================================== -->
+        <section id="admin-portal" class="space-y-6">
+            
+            <!-- Dashboard Stats & Target Batch Bar (Max 180 Qs) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-semibold uppercase">Active Subject Focus</div>
+                    <div id="stat-active-subject" class="text-lg font-black text-slate-800 mt-1">Full 4-Subject Combo</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-semibold uppercase">180-Q Batch Progress</div>
+                    <div class="flex items-center justify-between mt-1">
+                        <div id="stat-batch-count" class="text-lg font-black text-jamb-green">0 / 180 Qs</div>
+                        <span id="stat-batch-percent" class="text-xs font-bold bg-emerald-100 text-jamb-green px-2 py-0.5 rounded">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div id="stat-batch-bar" class="bg-jamb-green h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-semibold uppercase">Master Bank Pool</div>
+                    <div id="stat-total-questions" class="text-lg font-black text-slate-800 mt-1">0 Questions</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-semibold uppercase">Published Mock Exams</div>
+                    <div id="stat-published-quizzes" class="text-lg font-black text-amber-600 mt-1">0 Exams</div>
+                </div>
+            </div>
+
+            <!-- Question Creation Tools Navigation -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="border-b border-slate-200 bg-slate-50/80 px-4 pt-3 flex flex-wrap gap-2">
+                    <button onclick="switchAdminTab('ai')" id="tab-btn-ai" class="admin-tab-btn py-2.5 px-4 rounded-t-xl text-xs font-bold border-b-2 border-jamb-green text-jamb-green bg-white flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> AI Batch Generator (Up to 180)
+                    </button>
+                    <button onclick="switchAdminTab('upload')" id="tab-btn-upload" class="admin-tab-btn py-2.5 px-4 rounded-t-xl text-xs font-semibold border-b-2 border-transparent text-slate-600 hover:text-jamb-green flex items-center gap-2">
+                        <i class="fa-solid fa-file-import text-blue-600"></i> CSV / JSON Bulk Upload (Up to 180)
+                    </button>
+                    <button onclick="switchAdminTab('manual')" id="tab-btn-manual" class="admin-tab-btn py-2.5 px-4 rounded-t-xl text-xs font-semibold border-b-2 border-transparent text-slate-600 hover:text-jamb-green flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square"></i> Single Manual Creator
+                    </button>
+                </div>
+
+                <div class="p-6">
+
+                    <!-- METHOD A: GEMINI AI BATCH GENERATOR -->
+                    <div id="admin-tab-ai" class="admin-tab-content space-y-4">
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                            <i class="fa-solid fa-microchip text-2xl text-amber-600 mt-1"></i>
+                            <div>
+                                <h4 class="font-extrabold text-amber-900 text-sm">Gemini AI Batch Generator Engine (`gemini-2.5-flash`)</h4>
+                                <p class="text-xs text-amber-800">Generates authentic JAMB UTME multiple choice items with options A-D and detailed solutions. Auto-chunks large requests up to 180 questions into background API batches.</p>
+                            </div>
+                        </div>
+
+                        <form id="ai-generator-form" onsubmit="generateAIBatch(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Subject</label>
+                                    <select id="ai-subject" onchange="updateActiveSubjectDisplay()" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs font-bold bg-white" required>
+                                        <option value="Use of English">Use of English (60 Qs Standard)</option>
+                                        <option value="Mathematics">Mathematics (40 Qs Standard)</option>
+                                        <option value="Physics">Physics (40 Qs Standard)</option>
+                                        <option value="Chemistry">Chemistry (40 Qs Standard)</option>
+                                        <option value="Biology">Biology (40 Qs Standard)</option>
+                                        <option value="Economics">Economics (40 Qs Standard)</option>
+                                        <option value="Government">Government (40 Qs Standard)</option>
+                                        <option value="Commerce">Commerce (40 Qs Standard)</option>
+                                        <option value="Literature in English">Literature in English</option>
+                                        <option value="CRS/IRS">CRK / IRK</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Batch Count (Max 180)</label>
+                                    <select id="ai-count" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs font-bold bg-white">
+                                        <option value="10">10 Questions (Quick Draft)</option>
+                                        <option value="20">20 Questions (Half Subject)</option>
+                                        <option value="40">40 Questions (1 Standard Subject)</option>
+                                        <option value="60">60 Questions (Use of English Batch)</option>
+                                        <option value="100">100 Questions (2-Subject Combination)</option>
+                                        <option value="120">120 Questions (3-Subject Combination)</option>
+                                        <option value="160">160 Questions (Near Full UTME)</option>
+                                        <option value="180" selected>180 Questions (FULL 4-Subject UTME Mock)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Difficulty Level</label>
+                                    <select id="ai-difficulty" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs bg-white">
+                                        <option value="Standard UTME Level">Standard UTME Level</option>
+                                        <option value="Advanced JAMB / Hard">Advanced JAMB / Hard</option>
+                                        <option value="Fundamental Concepts">Fundamental Concepts</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Gemini API Key</label>
+                                    <input type="password" id="ai-api-key" onchange="saveApiKeyLocally()" placeholder="Enter API Key..." class="w-full p-2.5 rounded-lg border border-slate-300 text-xs font-mono">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Topics / Specific Prompt Focus</label>
+                                <input type="text" id="ai-prompt" placeholder="e.g. Passages, Lexis & Structure, Mechanics, Electricity, Algebra, Genetics" class="w-full p-3 rounded-lg border border-slate-300 text-xs" required>
+                            </div>
+
+                            <!-- Progress & Status Indicator -->
+                            <div id="ai-progress-container" class="hidden space-y-2 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                <div class="flex justify-between items-center text-xs font-bold text-jamb-green">
+                                    <span id="ai-progress-status"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Generating 180 Batch...</span>
+                                    <span id="ai-progress-text">0%</span>
+                                </div>
+                                <div class="w-full bg-emerald-200 h-2.5 rounded-full overflow-hidden">
+                                    <div id="ai-progress-bar" class="bg-jamb-green h-full w-0 transition-all duration-300"></div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-2">
+                                <p class="text-[11px] text-slate-500">Auto-chunks into 10-20 Qs API calls up to 180 questions maximum.</p>
+                                <button type="submit" id="ai-submit-btn" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-6 rounded-xl transition text-xs flex items-center gap-2 shadow">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Start AI Batch Generation
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- METHOD B: CSV / JSON BULK UPLOAD -->
+                    <div id="admin-tab-upload" class="admin-tab-content space-y-4 hidden">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="flex-grow">
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Upload CSV or JSON Batch (Up to 180 Questions)</label>
+                                <div id="drop-zone" onclick="document.getElementById('file-input').click()" class="border-2 border-dashed border-slate-300 hover:border-jamb-green bg-slate-50 hover:bg-emerald-50/50 rounded-2xl p-8 text-center cursor-pointer transition">
+                                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-jamb-green mb-3"></i>
+                                    <p class="text-xs font-bold text-slate-700">Click or drag CSV/JSON batch file here</p>
+                                    <p class="text-[11px] text-slate-500 mt-1">Supports up to 180 questions in a single file upload</p>
+                                    <input type="file" id="file-input" accept=".csv,.json" class="hidden" onchange="handleFileUpload(event)">
+                                </div>
+                            </div>
+
+                            <div class="w-full md:w-80 bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <h4 class="font-bold text-xs uppercase text-slate-700 mb-2">Download Batch Templates</h4>
+                                    <p class="text-[11px] text-slate-500 mb-3">Offline format templates supporting up to 180 items.</p>
+                                    <div class="space-y-2">
+                                        <button onclick="downloadSampleCSV()" class="w-full py-2 px-3 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg text-xs font-semibold text-slate-700 flex items-center justify-between">
+                                            <span><i class="fa-solid fa-file-csv text-green-600 mr-2"></i> CSV Template (180 Max)</span>
+                                            <i class="fa-solid fa-download text-slate-400"></i>
+                                        </button>
+                                        <button onclick="downloadSampleJSON()" class="w-full py-2 px-3 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg text-xs font-semibold text-slate-700 flex items-center justify-between">
+                                            <span><i class="fa-solid fa-file-code text-blue-600 mr-2"></i> JSON Template</span>
+                                            <i class="fa-solid fa-download text-slate-400"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Uploaded Preview Modal / Table -->
+                        <div id="file-preview-container" class="hidden space-y-3 pt-4 border-t border-slate-200">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-xs text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-eye text-jamb-green"></i> File Batch Preview (<span id="parsed-count">0</span> Questions Loaded)
+                                </h4>
+                                <button onclick="importParsedQuestions()" class="bg-jamb-green hover:bg-jamb-darkgreen text-white font-bold py-1.5 px-4 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-file-circle-plus"></i> Append Batch to Question Bank
+                                </button>
+                            </div>
+                            <div class="max-h-60 overflow-y-auto border border-slate-200 rounded-xl">
+                                <table class="w-full text-left text-xs text-slate-600">
+                                    <thead class="bg-slate-100 text-slate-700 uppercase font-bold sticky top-0">
+                                        <tr>
+                                            <th class="p-2 border-b">#</th>
+                                            <th class="p-2 border-b">Subject</th>
+                                            <th class="p-2 border-b">Question</th>
+                                            <th class="p-2 border-b">Correct</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="parsed-table-body" class="divide-y divide-slate-200 bg-white"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- METHOD C: SINGLE MANUAL QUESTION CREATOR -->
+                    <div id="admin-tab-manual" class="admin-tab-content space-y-4 hidden">
+                        <form id="manual-question-form" onsubmit="handleManualSubmit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Subject</label>
+                                    <select id="manual-subject" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs font-bold bg-white" required>
+                                        <option value="Use of English">Use of English</option>
+                                        <option value="Mathematics">Mathematics</option>
+                                        <option value="Physics">Physics</option>
+                                        <option value="Chemistry">Chemistry</option>
+                                        <option value="Biology">Biology</option>
+                                        <option value="Economics">Economics</option>
+                                        <option value="Government">Government</option>
+                                        <option value="Commerce">Commerce</option>
+                                        <option value="Literature in English">Literature in English</option>
+                                        <option value="CRS/IRS">CRK / IRK</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Topic / Module</label>
+                                    <input type="text" id="manual-topic" placeholder="e.g. Comprehension / Mechanics" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Question Passage / Text</label>
+                                <textarea id="manual-text" rows="3" placeholder="Enter standard UTME question prompt..." class="w-full p-3 rounded-lg border border-slate-300 text-xs" required></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Option A</label>
+                                    <input type="text" id="manual-opt-a" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs" required>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Option B</label>
+                                    <input type="text" id="manual-opt-b" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs" required>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Option C</label>
+                                    <input type="text" id="manual-opt-c" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs" required>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Option D</label>
+                                    <input type="text" id="manual-opt-d" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs" required>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correct Answer</label>
+                                    <select id="manual-correct" class="w-full p-2.5 rounded-lg border border-slate-300 font-bold text-jamb-green text-xs bg-white" required>
+                                        <option value="A">Option A</option>
+                                        <option value="B">Option B</option>
+                                        <option value="C">Option C</option>
+                                        <option value="D">Option D</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Explanation / Solution</label>
+                                    <input type="text" id="manual-explanation" placeholder="Provide step-by-step reasoning for candidates..." class="w-full p-2.5 rounded-lg border border-slate-300 text-xs" required>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end pt-2">
+                                <button type="submit" class="bg-jamb-green hover:bg-jamb-darkgreen text-white font-bold py-2.5 px-6 rounded-xl text-xs transition shadow flex items-center gap-2">
+                                    <i class="fa-solid fa-plus"></i> Save to Master Question Bank
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- QUESTION BANK MANAGER & MOCK EXAM CONFIGURATOR -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Draft Bank Pool (2 Cols) -->
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                            <div>
+                                <h3 class="text-base font-extrabold text-slate-800">Master Question Bank Pool</h3>
+                                <p class="text-xs text-slate-500">Filter, edit and manage questions in your master repository</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="loadDemo180Questions()" class="px-3 py-1.5 bg-emerald-100 text-jamb-green hover:bg-emerald-200 text-xs font-bold rounded-lg transition flex items-center gap-1">
+                                    <i class="fa-solid fa-bolt"></i> Load 180-Q Full Combo Demo
+                                </button>
+                                <button onclick="clearDraftBank()" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 text-xs font-bold rounded-lg transition flex items-center gap-1">
+                                    <i class="fa-solid fa-trash-can"></i> Clear Bank
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filters -->
+                        <div class="flex flex-col sm:flex-row items-center gap-3 mb-4">
+                            <div class="relative w-full sm:w-1/2">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                                <input type="text" id="bank-search" oninput="renderQuestionBank()" placeholder="Search questions..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-lg">
+                            </div>
+                            <select id="bank-filter-subject" onchange="renderQuestionBank()" class="w-full sm:w-1/2 text-xs p-2 border border-slate-300 rounded-lg bg-white font-semibold">
+                                <option value="ALL">All Subjects</option>
+                                <option value="Use of English">Use of English</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Physics">Physics</option>
+                                <option value="Chemistry">Chemistry</option>
+                                <option value="Biology">Biology</option>
+                                <option value="Economics">Economics</option>
+                                <option value="Government">Government</option>
+                                <option value="Commerce">Commerce</option>
+                            </select>
+                        </div>
+
+                        <!-- Bank List -->
+                        <div id="draft-bank-list" class="space-y-3 max-h-[420px] overflow-y-auto pr-1"></div>
+                    </div>
+                </div>
+
+                <!-- Mock Exam Configurator & Publisher (1 Col) -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-cloud-arrow-up text-jamb-gold"></i> Quiz & Mock Publisher
+                            </h3>
+                            <p class="text-xs text-slate-500">Publish active questions into 180-Q UTME CBT format</p>
+                        </div>
+
+                        <form id="quiz-publisher-form" onsubmit="publishQuiz(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Exam Title</label>
+                                <input type="text" id="pub-title" placeholder="e.g. UTME 2026 Grand 180-Q Mock Exam" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs" required>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Access Code</label>
+                                    <input type="text" id="pub-code" placeholder="JAMB-MOCK-180" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs font-mono uppercase" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Subject Scope</label>
+                                    <select id="pub-subject" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs font-bold bg-white" required>
+                                        <option value="Full 4-Subject Combo">Full 4-Subject Combo</option>
+                                        <option value="Use of English">Use of English Only</option>
+                                        <option value="Mathematics">Mathematics Only</option>
+                                        <option value="Physics">Physics Only</option>
+                                        <option value="Chemistry">Chemistry Only</option>
+                                        <option value="Biology">Biology Only</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Max Questions</label>
+                                    <select id="pub-q-count" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs font-bold bg-white">
+                                        <option value="10">10 Questions</option>
+                                        <option value="20">20 Questions</option>
+                                        <option value="40">40 Questions</option>
+                                        <option value="60">60 Questions</option>
+                                        <option value="100">100 Questions</option>
+                                        <option value="120">120 Questions</option>
+                                        <option value="160">160 Questions</option>
+                                        <option value="180" selected>180 Questions (Full UTME)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Duration (Mins)</label>
+                                    <input type="number" id="pub-duration" min="5" max="180" value="120" class="w-full p-2.5 rounded-lg border border-slate-300 text-xs" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full bg-jamb-green hover:bg-jamb-darkgreen text-white font-bold py-3 px-4 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow">
+                                <i class="fa-solid fa-paper-plane"></i> Publish Mock Exam to Student Portal
+                            </button>
+                        </form>
+
+                        <div class="pt-4 border-t border-slate-100">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-xs font-bold text-slate-700 uppercase">Published Tests (<span id="pub-quiz-count">0</span>)</h4>
+                                <button onclick="exportAllQuizzes()" class="text-[11px] text-jamb-green hover:underline font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-download"></i> Backup JSON
+                                </button>
+                            </div>
+                            <div id="published-quiz-list" class="space-y-2 max-h-40 overflow-y-auto pr-1 text-xs"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: STUDENT JAMB CBT SIMULATOR        -->
+        <!-- ========================================== -->
+        <section id="student-portal" class="space-y-6 hidden">
+            
+            <!-- CBT LOBBY & CODE ENTRY -->
+            <div id="cbt-lobby" class="max-w-2xl mx-auto space-y-6 py-6">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center space-y-6">
+                    <div class="w-16 h-16 bg-emerald-100 text-jamb-green rounded-full flex items-center justify-center text-3xl mx-auto shadow-sm">
+                        <i class="fa-solid fa-laptop-code"></i>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-800">JAMB UTME CBT Exam Hall</h2>
+                        <p class="text-xs text-slate-500 mt-1">Select an active exam batch or enter your official test access code</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Enter Exam Access Code</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="access-code-input" placeholder="e.g. JAMB-MOCK-180" class="flex-grow p-3 rounded-xl border border-slate-300 font-mono text-center text-lg font-bold uppercase focus:ring-2 focus:ring-jamb-green">
+                            <button onclick="startExamByCode()" class="bg-jamb-green hover:bg-jamb-darkgreen text-white font-bold px-6 py-3 rounded-xl text-xs transition shadow">
+                                Start Exam
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="text-left space-y-3">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Available Active Mock Exams</h4>
+                        <div id="available-quiz-cards" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CBT EXAM ROOM SIMULATOR -->
+            <div id="cbt-exam-room" class="hidden space-y-4">
+                
+                <!-- CBT Top Info Bar -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></span>
+                        <div>
+                            <h3 id="cbt-active-title" class="font-extrabold text-slate-800 text-base">UTME Exam Title</h3>
+                            <span id="cbt-active-subject" class="text-xs text-slate-500 font-semibold">Subject Scope</span>
+                        </div>
+                    </div>
+
+                    <div id="timer-card" class="flex items-center space-x-4 bg-slate-900 text-white px-5 py-2.5 rounded-xl shadow-inner transition-colors duration-300">
+                        <i class="fa-solid fa-stopwatch text-jamb-gold text-xl"></i>
+                        <div>
+                            <div class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Time Remaining</div>
+                            <div id="cbt-timer-display" class="font-mono text-xl font-black text-jamb-gold">00:00:00</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button id="flag-btn" onclick="toggleFlagQuestion()" class="bg-amber-100 text-amber-800 hover:bg-amber-200 text-xs font-bold py-2.5 px-4 rounded-xl transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-flag"></i> Flag Question
+                        </button>
+                        <button onclick="confirmSubmitExam()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-5 rounded-xl transition flex items-center gap-2 shadow">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Exam
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CBT Question & 180-Grid Palette Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    
+                    <!-- Question Box (3 Cols) -->
+                    <div class="lg:col-span-3 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between min-h-[460px]">
+                        <div>
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-emerald-100 text-jamb-green font-bold text-xs px-3 py-1 rounded-full">
+                                        Question <span id="cbt-q-number">1</span> of <span id="cbt-total-count">180</span>
+                                    </span>
+                                    <span id="cbt-flagged-tag" class="hidden bg-amber-500 text-white font-bold text-[10px] px-2 py-0.5 rounded-full uppercase">
+                                        <i class="fa-solid fa-flag mr-1"></i> Flagged
+                                    </span>
+                                </div>
+                                <span class="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-lg" id="cbt-q-subject-badge">General UTME</span>
+                            </div>
+
+                            <div id="cbt-question-text" class="text-slate-800 text-base sm:text-lg font-medium mb-6 leading-relaxed">
+                                Loading question text...
+                            </div>
+
+                            <div id="cbt-options-container" class="space-y-3"></div>
+                        </div>
+
+                        <!-- CBT Navigation Controls -->
+                        <div class="flex items-center justify-between pt-6 border-t border-slate-100 mt-6">
+                            <button id="cbt-prev-btn" onclick="navQuestion(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-2.5 rounded-xl text-xs transition flex items-center gap-2">
+                                <i class="fa-solid fa-chevron-left"></i> Previous
+                            </button>
+
+                            <div class="text-xs text-slate-400 font-medium hidden sm:block">Use 180-grid palette to jump directly</div>
+
+                            <button id="cbt-next-btn" onclick="navQuestion(1)" class="bg-jamb-green hover:bg-jamb-darkgreen text-white font-bold px-5 py-2.5 rounded-xl text-xs transition flex items-center gap-2">
+                                Next <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 180-Grid Question Palette Sidebar (1 Col) -->
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h4 class="font-bold text-xs uppercase text-slate-700 mb-3 flex items-center justify-between">
+                                <span>Question Palette (Up to 180)</span>
+                                <i class="fa-solid fa-table-cells text-slate-400"></i>
+                            </h4>
+
+                            <div class="grid grid-cols-2 gap-1 text-[9px] text-center mb-3">
+                                <div class="bg-jamb-green text-white rounded p-1 font-bold">Answered</div>
+                                <div class="bg-slate-200 text-slate-700 rounded p-1 font-bold">Unanswered</div>
+                                <div class="bg-blue-600 text-white rounded p-1 font-bold">Current</div>
+                                <div class="bg-amber-500 text-white rounded p-1 font-bold">Flagged</div>
+                            </div>
+
+                            <!-- Scrollable Grid palette supporting 180 Qs -->
+                            <div id="cbt-palette-grid" class="grid grid-cols-6 gap-1 max-h-80 overflow-y-auto p-1"></div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-100 text-center">
+                            <div class="text-xs text-slate-500">Answered: <span id="palette-answered-count" class="font-bold text-jamb-green">0</span> / <span id="palette-total-count">180</span></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RESULT & SOLUTIONS SCREEN -->
+            <div id="cbt-result-screen" class="hidden space-y-6 max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center space-y-4">
+                    <div id="result-badge-icon" class="w-20 h-20 bg-emerald-100 text-jamb-green rounded-full flex items-center justify-center text-4xl mx-auto shadow-inner">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-800">Exam Completed!</h2>
+                        <p class="text-xs text-slate-500 mt-1">Official Standard JAMB UTME Scaled Performance Analytics</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto pt-2">
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <div class="text-[10px] uppercase font-bold text-slate-400">JAMB Scaled Score</div>
+                            <div id="result-jamb-scaled" class="text-xl font-black text-jamb-green">0 / 400</div>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <div class="text-[10px] uppercase font-bold text-slate-400">Accuracy</div>
+                            <div id="result-percent-text" class="text-xl font-black text-blue-600">0%</div>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <div class="text-[10px] uppercase font-bold text-slate-400">Time Spent</div>
+                            <div id="result-time-text" class="text-xl font-black text-purple-600">0m 0s</div>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <div class="text-[10px] uppercase font-bold text-slate-400">Status</div>
+                            <div id="result-pass-status" class="text-xl font-black text-emerald-600">PASSED</div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button onclick="returnToLobby()" class="bg-jamb-green hover:bg-jamb-darkgreen text-white font-bold py-2.5 px-6 rounded-xl transition text-xs">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Return to Exam Lobby
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                    <h3 class="text-base font-extrabold text-slate-800 flex items-center justify-between">
+                        <span>Solutions & Explanations Review</span>
+                        <i class="fa-solid fa-book-open text-jamb-green"></i>
+                    </h3>
+                    <div id="result-breakdown-list" class="space-y-4 divide-y divide-slate-100 max-h-[600px] overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 mt-auto py-4 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>&copy; 2026 <strong>JAMB Excellence Tutorial</strong>. Designed for Nigerian UTME Candidates (180 Qs Capacity).</div>
+            <div class="flex items-center space-x-4">
+                <span class="text-slate-400"><i class="fa-solid fa-shield-halved text-jamb-green"></i> Offline Storage Active</span>
+                <span class="text-slate-400"><i class="fa-solid fa-brain text-amber-500"></i> Gemini AI Powered</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // GLOBAL STATE
+        const STORAGE_KEY_BANK = 'jamb_180_draft_bank_v3';
+        const STORAGE_KEY_QUIZZES = 'jamb_180_quizzes_v3';
+        const STORAGE_KEY_API_KEY = 'jamb_gemini_api_key';
+
+        let draftQuestionBank = [];
+        let publishedQuizzes = [];
+        let parsedUploadQuestions = [];
+
+        // CBT Simulator State
+        let currentExam = null;
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let flaggedQuestions = {};
+        let timerInterval = null;
+        let timeRemainingSeconds = 0;
+        let examStartTime = 0;
+
+        // PRE-LOADED 180 DEMO QUESTIONS (60 English + 40 Physics + 40 Math + 40 Chemistry = 180 Total)
+        function generate180DemoQuestions() {
+            const batch = [];
+            const subjects = [
+                { name: 'Use of English', count: 60 },
+                { name: 'Physics', count: 40 },
+                { name: 'Mathematics', count: 40 },
+                { name: 'Chemistry', count: 40 }
+            ];
+
+            let globalIdx = 1;
+            subjects.forEach(subObj => {
+                for (let i = 1; i <= subObj.count; i++) {
+                    batch.push({
+                        id: `demo-180-${globalIdx}`,
+                        subject: subObj.name,
+                        topic: `${subObj.name} Module ${Math.ceil(i / 10)}`,
+                        question: `[Q${globalIdx} - ${subObj.name}] Sample UTME past question on item #${i}. Evaluate the primary core principle in relation to standard parameters.`,
+                        options: {
+                            A: `Option A for item ${globalIdx} context`,
+                            B: `Option B for item ${globalIdx} context (Correct)`,
+                            C: `Option C for item ${globalIdx} context`,
+                            D: `Option D for item ${globalIdx} context`
+                        },
+                        correct: 'B',
+                        explanation: `Official UTME standard solution for Q${globalIdx}: Option B correctly satisfies the criteria for ${subObj.name}.`
+                    });
+                    globalIdx++;
+                }
+            });
+            return batch;
+        }
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedData();
+            if (draftQuestionBank.length === 0) {
+                draftQuestionBank = generate180DemoQuestions();
+                saveToStorage();
+            }
+            if (publishedQuizzes.length === 0) {
+                publishedQuizzes.push({
+                    id: 'pub-mock-180',
+                    code: 'JAMB-MOCK-180',
+                    title: 'UTME 2026 Grand 180-Question Full Combo Mock',
+                    subject: 'Full 4-Subject Combo',
+                    duration: 120,
+                    questionLimit: 180,
+                    questions: [...draftQuestionBank]
+                });
+                saveToStorage();
+            }
+            renderQuestionBank();
+            renderPublishedQuizzes();
+            renderAvailableLobbyQuizzes();
+            updateStats();
+        });
+
+        function loadSavedData() {
+            try {
+                const bank = localStorage.getItem(STORAGE_KEY_BANK);
+                if (bank) draftQuestionBank = JSON.parse(bank);
+
+                const quiz = localStorage.getItem(STORAGE_KEY_QUIZZES);
+                if (quiz) publishedQuizzes = JSON.parse(quiz);
+
+                const key = localStorage.getItem(STORAGE_KEY_API_KEY);
+                if (key) document.getElementById('ai-api-key').value = key;
+            } catch (e) {
+                console.error("Error loading storage", e);
+            }
+        }
+
+        function saveToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY_BANK, JSON.stringify(draftQuestionBank));
+                localStorage.setItem(STORAGE_KEY_QUIZZES, JSON.stringify(publishedQuizzes));
+                updateStats();
+            } catch (e) {
+                console.error("Error saving storage", e);
+            }
+        }
+
+        function saveApiKeyLocally() {
+            const key = document.getElementById('ai-api-key').value.trim();
+            localStorage.setItem(STORAGE_KEY_API_KEY, key);
+            showToast("Gemini API key saved locally!", "success");
+        }
+
+        function updateStats() {
+            const total = draftQuestionBank.length;
+            document.getElementById('stat-total-questions').innerText = `${total} Qs`;
+            document.getElementById('hdr-stat-bank').innerText = `${total} / 180 Qs`;
+            document.getElementById('stat-published-quizzes').innerText = `${publishedQuizzes.length} Exams`;
+            document.getElementById('hdr-stat-quizzes').innerText = `${publishedQuizzes.length} Active`;
+            document.getElementById('pub-quiz-count').innerText = publishedQuizzes.length;
+            updateActiveSubjectDisplay();
+        }
+
+        function updateActiveSubjectDisplay() {
+            const activeSub = document.getElementById('ai-subject').value;
+            document.getElementById('stat-active-subject').innerText = activeSub;
+
+            const subCount = draftQuestionBank.filter(q => q.subject === activeSub).length;
+            document.getElementById('stat-batch-count').innerText = `${subCount} / 180 Qs`;
+            const pct = Math.min(100, Math.round((subCount / 180) * 100));
+            document.getElementById('stat-batch-percent').innerText = `${pct}%`;
+            document.getElementById('stat-batch-bar').style.width = `${pct}%`;
+        }
+
+        // ROLE & TAB SWITCHERS
+        function switchRole(role) {
+            const admin = document.getElementById('admin-portal');
+            const student = document.getElementById('student-portal');
+            const adminBtn = document.getElementById('nav-admin-btn');
+            const studentBtn = document.getElementById('nav-student-btn');
+
+            if (role === 'admin') {
+                admin.classList.remove('hidden');
+                student.classList.add('hidden');
+                adminBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-white bg-jamb-green shadow";
+                studentBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-emerald-200 hover:text-white";
+                renderQuestionBank();
+            } else {
+                admin.classList.add('hidden');
+                student.classList.remove('hidden');
+                studentBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-white bg-jamb-green shadow";
+                adminBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-emerald-200 hover:text-white";
+                renderAvailableLobbyQuizzes();
+            }
+        }
+
+        function switchAdminTab(tabName) {
+            document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                btn.classList.remove('border-jamb-green', 'text-jamb-green', 'bg-white');
+                btn.classList.add('border-transparent', 'text-slate-600');
+            });
+
+            const activeTab = document.getElementById(`admin-tab-${tabName}`);
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            if (activeTab && activeBtn) {
+                activeTab.classList.remove('hidden');
+                activeBtn.classList.add('border-jamb-green', 'text-jamb-green', 'bg-white');
+                activeBtn.classList.remove('border-transparent', 'text-slate-600');
+            }
+        }
+
+        // GEMINI AI BATCH GENERATOR (UP TO 180 Qs)
+        async function generateAIBatch(e) {
+            e.preventDefault();
+            const subject = document.getElementById('ai-subject').value;
+            const targetTotal = parseInt(document.getElementById('ai-count').value, 10) || 10;
+            const difficulty = document.getElementById('ai-difficulty').value;
+            const promptFocus = document.getElementById('ai-prompt').value;
+            const apiKey = document.getElementById('ai-api-key').value.trim();
+
+            if (!apiKey) {
+                showToast("Please enter your Gemini API key!", "error");
+                return;
+            }
+
+            const progressContainer = document.getElementById('ai-progress-container');
+            const progressBar = document.getElementById('ai-progress-bar');
+            const progressStatus = document.getElementById('ai-progress-status');
+            const progressText = document.getElementById('ai-progress-text');
+            const submitBtn = document.getElementById('ai-submit-btn');
+
+            progressContainer.classList.remove('hidden');
+            submitBtn.disabled = true;
+
+            const chunkSize = 15; // API call chunking size
+            let totalGenerated = 0;
+            const iterations = Math.ceil(targetTotal / chunkSize);
+
+            for (let i = 0; i < iterations; i++) {
+                const countThisBatch = Math.min(chunkSize, targetTotal - totalGenerated);
+                const currentPct = Math.round((totalGenerated / targetTotal) * 100);
+                
+                progressBar.style.width = `${currentPct}%`;
+                progressText.innerText = `${currentPct}%`;
+                progressStatus.innerText = `Generating Chunk ${i+1}/${iterations} (${totalGenerated}/${targetTotal} Qs)...`;
+
+                const payload = {
+                    contents: [{
+                        parts: [{
+                            text: `Generate ${countThisBatch} standard Nigerian JAMB UTME multiple choice questions for subject "${subject}". Topic/Focus: ${promptFocus}. Difficulty: ${difficulty}. Return strictly JSON array matching standard schema.`
+                        }]
+                    }],
+                    systemInstruction: {
+                        parts: [{ text: "You are an expert Nigerian JAMB UTME test author. Return authentic 4-option questions with detailed solutions." }]
+                    },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    "question": { "type": "STRING" },
+                                    "topic": { "type": "STRING" },
+                                    "optionA": { "type": "STRING" },
+                                    "optionB": { "type": "STRING" },
+                                    "optionC": { "type": "STRING" },
+                                    "optionD": { "type": "STRING" },
+                                    "correct": { "type": "STRING", "description": "A, B, C, or D" },
+                                    "explanation": { "type": "STRING" }
+                                },
+                                "propertyOrdering": ["question", "topic", "optionA", "optionB", "optionC", "optionD", "correct", "explanation"]
+                            }
+                        }
+                    }
+                };
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error(`API Error ${response.status}`);
+                    const result = await response.json();
+                    const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    const items = JSON.parse(jsonText);
+
+                    items.forEach(item => {
+                        draftQuestionBank.unshift({
+                            id: 'ai-180-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+                            subject,
+                            topic: item.topic || promptFocus,
+                            question: item.question,
+                            options: { A: item.optionA, B: item.optionB, C: item.optionC, D: item.optionD },
+                            correct: item.correct.toUpperCase().trim(),
+                            explanation: item.explanation || "Standard UTME concept."
+                        });
+                        totalGenerated++;
+                    });
+
+                    saveToStorage();
+                    renderQuestionBank();
+
+                } catch (err) {
+                    console.error("Chunk batch error", err);
+                    showToast(`Error in batch generation: ${err.message}`, 'error');
+                    break;
+                }
+            }
+
+            progressBar.style.width = `100%`;
+            progressText.innerText = `100%`;
+            progressStatus.innerText = `Batch Generation Complete! (${totalGenerated} Questions added)`;
+            submitBtn.disabled = false;
+            showToast(`Successfully generated ${totalGenerated} AI questions!`, 'success');
+        }
+
+        // CSV / JSON FILE UPLOAD
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            if (file.name.endsWith('.json')) {
+                reader.onload = (event) => {
+                    try {
+                        const parsed = JSON.parse(event.target.result);
+                        parsedUploadQuestions = formatParsedBatch(parsed);
+                        renderParsedPreview();
+                    } catch (err) { showToast("Invalid JSON file format", "error"); }
+                };
+                reader.readAsText(file);
+            } else if (file.name.endsWith('.csv')) {
+                reader.onload = (event) => {
+                    try {
+                        const items = parseCSV(event.target.result);
+                        parsedUploadQuestions = formatParsedBatch(items);
+                        renderParsedPreview();
+                    } catch (err) { showToast("Invalid CSV structure", "error"); }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function parseCSV(text) {
+            const lines = text.split(/\r\n|\n/);
+            const results = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const matches = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(',');
+                const row = matches.map(m => m.trim().replace(/^"|"$/g, ''));
+                if (row.length >= 7) {
+                    results.push({
+                        subject: row[0] || 'Use of English',
+                        question: row[1] || '',
+                        optionA: row[2] || '',
+                        optionB: row[3] || '',
+                        optionC: row[4] || '',
+                        optionD: row[5] || '',
+                        correct: row[6] || 'A',
+                        explanation: row[7] || 'Standard Question'
+                    });
+                }
+            }
+            return results;
+        }
+
+        function formatParsedBatch(items) {
+            return items.map((item, idx) => ({
+                id: 'file-180-' + Date.now() + '-' + idx,
+                subject: item.subject || 'Use of English',
+                topic: item.topic || 'General',
+                question: item.question || item.text || 'Untitled Question',
+                options: {
+                    A: item.optionA || (item.options ? item.options.A : 'Option A'),
+                    B: item.optionB || (item.options ? item.options.B : 'Option B'),
+                    C: item.optionC || (item.options ? item.options.C : 'Option C'),
+                    D: item.optionD || (item.options ? item.options.D : 'Option D')
+                },
+                correct: (item.correct || 'A').toUpperCase().trim(),
+                explanation: item.explanation || 'Solution available.'
+            }));
+        }
+
+        function renderParsedPreview() {
+            const container = document.getElementById('file-preview-container');
+            const tbody = document.getElementById('parsed-table-body');
+            document.getElementById('parsed-count').innerText = parsedUploadQuestions.length;
+
+            tbody.innerHTML = '';
+            parsedUploadQuestions.forEach((q, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-2 border-b font-mono text-slate-400">${idx + 1}</td>
+                    <td class="p-2 border-b font-bold text-slate-700">${escapeHtml(q.subject)}</td>
+                    <td class="p-2 border-b max-w-xs truncate">${escapeHtml(q.question)}</td>
+                    <td class="p-2 border-b font-bold text-jamb-green">${q.correct}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            container.classList.remove('hidden');
+        }
+
+        function importParsedQuestions() {
+            draftQuestionBank = [...parsedUploadQuestions, ...draftQuestionBank];
+            saveToStorage();
+            renderQuestionBank();
+            showToast(`Imported ${parsedUploadQuestions.length} questions!`, 'success');
+            parsedUploadQuestions = [];
+            document.getElementById('file-preview-container').classList.add('hidden');
+        }
+
+        function downloadSampleCSV() {
+            const csv = `Subject,Question,OptionA,OptionB,OptionC,OptionD,Correct,Explanation
+"Physics","Calculate force when mass is 10kg and acceleration is 2m/s2","20N","5N","12N","8N","A","F = m * a = 10 * 2 = 20N"`;
+            downloadFile(csv, 'jamb_batch_sample_180.csv', 'text/csv');
+        }
+
+        function downloadSampleJSON() {
+            const json = [{ subject: "Mathematics", question: "Evaluate 2^3", options: { A: "8", B: "6", C: "4", D: "2" }, correct: "A", explanation: "2*2*2=8" }];
+            downloadFile(JSON.stringify(json, null, 2), 'jamb_batch_sample_180.json', 'application/json');
+        }
+
+        // MANUAL QUESTION FORM
+        function handleManualSubmit(e) {
+            e.preventDefault();
+            const newQ = {
+                id: 'q-' + Date.now(),
+                subject: document.getElementById('manual-subject').value,
+                topic: document.getElementById('manual-topic').value || 'General',
+                question: document.getElementById('manual-text').value,
+                options: {
+                    A: document.getElementById('manual-opt-a').value,
+                    B: document.getElementById('manual-opt-b').value,
+                    C: document.getElementById('manual-opt-c').value,
+                    D: document.getElementById('manual-opt-d').value
+                },
+                correct: document.getElementById('manual-correct').value,
+                explanation: document.getElementById('manual-explanation').value
+            };
+
+            draftQuestionBank.unshift(newQ);
+            saveToStorage();
+            renderQuestionBank();
+            document.getElementById('manual-question-form').reset();
+            showToast('Question saved to draft bank!', 'success');
+        }
+
+        // DRAFT BANK MANAGER
+        function renderQuestionBank() {
+            const list = document.getElementById('draft-bank-list');
+            const search = document.getElementById('bank-search').value.toLowerCase();
+            const subFilter = document.getElementById('bank-filter-subject').value;
+
+            list.innerHTML = '';
+            const filtered = draftQuestionBank.filter(q => {
+                const matchSearch = q.question.toLowerCase().includes(search) || (q.topic && q.topic.toLowerCase().includes(search));
+                const matchSub = subFilter === 'ALL' || q.subject === subFilter;
+                return matchSearch && matchSub;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">No questions found matching criteria.</div>`;
+                return;
+            }
+
+            filtered.forEach((q, idx) => {
+                const item = document.createElement('div');
+                item.className = "p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-start justify-between gap-3 text-xs";
+                item.innerHTML = `
+                    <div class="space-y-1 flex-grow">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-[9px] uppercase bg-jamb-green text-white px-2 py-0.5 rounded">${escapeHtml(q.subject)}</span>
+                            <span class="text-slate-400 font-medium text-[11px]">${escapeHtml(q.topic || 'General')}</span>
+                        </div>
+                        <div class="font-bold text-slate-800 text-xs">${escapeHtml(q.question)}</div>
+                        <div class="text-[11px] text-jamb-green font-bold">Key Answer: Option ${q.correct}</div>
+                    </div>
+                    <button onclick="deleteBankQuestion('${q.id}')" class="text-red-400 hover:text-red-600 p-1">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function deleteBankQuestion(id) {
+            draftQuestionBank = draftQuestionBank.filter(q => q.id !== id);
+            saveToStorage();
+            renderQuestionBank();
+        }
+
+        function clearDraftBank() {
+            if (confirm("Clear all draft questions?")) {
+                draftQuestionBank = [];
+                saveToStorage();
+                renderQuestionBank();
+            }
+        }
+
+        function loadDemo180Questions() {
+            draftQuestionBank = generate180DemoQuestions();
+            saveToStorage();
+            renderQuestionBank();
+            showToast("180-Question Full UTME Combo Demo Loaded!", "success");
+        }
+
+        // PUBLISH MOCK EXAM
+        function publishQuiz(e) {
+            e.preventDefault();
+            if (draftQuestionBank.length === 0) {
+                showToast("Cannot publish: Question bank is empty!", "error");
+                return;
+            }
+
+            const title = document.getElementById('pub-title').value;
+            const code = document.getElementById('pub-code').value.toUpperCase().trim();
+            const subject = document.getElementById('pub-subject').value;
+            const qLimit = Math.min(180, parseInt(document.getElementById('pub-q-count').value, 10));
+            const duration = parseInt(document.getElementById('pub-duration').value, 10);
+
+            let questionsForQuiz = draftQuestionBank;
+            if (subject !== 'Full 4-Subject Combo') {
+                const subFiltered = draftQuestionBank.filter(q => q.subject === subject);
+                if (subFiltered.length > 0) questionsForQuiz = subFiltered;
+            }
+            questionsForQuiz = questionsForQuiz.slice(0, qLimit);
+
+            const newQuiz = {
+                id: 'quiz-180-' + Date.now(),
+                code,
+                title,
+                subject,
+                duration,
+                questionLimit: questionsForQuiz.length,
+                questions: questionsForQuiz
+            };
+
+            const idx = publishedQuizzes.findIndex(q => q.code === code);
+            if (idx >= 0) publishedQuizzes[idx] = newQuiz;
+            else publishedQuizzes.push(newQuiz);
+
+            saveToStorage();
+            renderPublishedQuizzes();
+            renderAvailableLobbyQuizzes();
+            showToast(`Published Mock Exam Code: ${code} (${questionsForQuiz.length} Qs)`, 'success');
+        }
+
+        function renderPublishedQuizzes() {
+            const list = document.getElementById('published-quiz-list');
+            list.innerHTML = '';
+            publishedQuizzes.forEach(quiz => {
+                const card = document.createElement('div');
+                card.className = "p-2 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between";
+                card.innerHTML = `
+                    <div>
+                        <span class="bg-jamb-gold text-black font-mono font-bold text-[10px] px-1.5 py-0.5 rounded">${quiz.code}</span>
+                        <span class="font-bold text-slate-800 ml-1.5">${escapeHtml(quiz.title)}</span>
+                        <div class="text-[10px] text-slate-500">${quiz.questions.length} Qs • ${quiz.duration} mins</div>
+                    </div>
+                    <button onclick="deletePublishedQuiz('${quiz.id}')" class="text-red-400 hover:text-red-600 p-1"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function deletePublishedQuiz(id) {
+            publishedQuizzes = publishedQuizzes.filter(q => q.id !== id);
+            saveToStorage();
+            renderPublishedQuizzes();
+            renderAvailableLobbyQuizzes();
+        }
+
+        function exportAllQuizzes() {
+            downloadFile(JSON.stringify(publishedQuizzes, null, 2), 'jamb_180_published_quizzes.json', 'application/json');
+        }
+
+        // CBT SIMULATOR & 180-GRID PALETTE
+        function renderAvailableLobbyQuizzes() {
+            const container = document.getElementById('available-quiz-cards');
+            container.innerHTML = '';
+            publishedQuizzes.forEach(quiz => {
+                const card = document.createElement('div');
+                card.className = "p-4 bg-white hover:bg-emerald-50/50 border border-slate-200 hover:border-jamb-green rounded-xl transition flex items-center justify-between cursor-pointer shadow-sm";
+                card.onclick = () => launchExam(quiz);
+                card.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-jamb-green text-white font-mono font-bold text-xs px-2 py-0.5 rounded">${quiz.code}</span>
+                            <h4 class="font-bold text-slate-800 text-xs">${escapeHtml(quiz.title)}</h4>
+                        </div>
+                        <div class="text-[11px] text-slate-500 flex items-center gap-3">
+                            <span><i class="fa-solid fa-clock text-slate-400"></i> ${quiz.duration} Mins</span>
+                            <span><i class="fa-solid fa-list-check text-jamb-green"></i> ${quiz.questions.length} Questions</span>
+                        </div>
+                    </div>
+                    <button class="bg-jamb-green hover:bg-jamb-darkgreen text-white font-bold text-xs px-4 py-2 rounded-xl transition">Start</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function startExamByCode() {
+            const code = document.getElementById('access-code-input').value.toUpperCase().trim();
+            const found = publishedQuizzes.find(q => q.code === code);
+            if (found) launchExam(found);
+            else showToast(`Exam code "${code}" not found!`, "error");
+        }
+
+        function launchExam(quiz) {
+            currentExam = quiz;
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            flaggedQuestions = {};
+            timeRemainingSeconds = quiz.duration * 60;
+            examStartTime = Date.now();
+
+            document.getElementById('cbt-lobby').classList.add('hidden');
+            document.getElementById('cbt-result-screen').classList.add('hidden');
+            document.getElementById('cbt-exam-room').classList.remove('hidden');
+
+            document.getElementById('cbt-active-title').innerText = quiz.title;
+            document.getElementById('cbt-active-subject').innerText = quiz.subject;
+            document.getElementById('cbt-total-count').innerText = quiz.questions.length;
+            document.getElementById('palette-total-count').innerText = quiz.questions.length;
+
+            startTimer();
+            renderCBTQuestion();
+            renderPalette();
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            const timerCard = document.getElementById('timer-card');
+            timerCard.classList.remove('timer-warning');
+
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeRemainingSeconds--;
+                updateTimerDisplay();
+
+                // Alert when less than 5 mins remain
+                if (timeRemainingSeconds <= 300 && !timerCard.classList.contains('timer-warning')) {
+                    timerCard.classList.add('timer-warning');
+                    showToast("Warning: Less than 5 minutes remaining!", "error");
+                }
+
+                if (timeRemainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    showToast("Time expired! Automatically submitting exam...", "info");
+                    finishExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const hrs = Math.floor(timeRemainingSeconds / 3600);
+            const mins = Math.floor((timeRemainingSeconds % 3600) / 60);
+            const secs = timeRemainingSeconds % 60;
+            const fmt = (n) => String(n).padStart(2, '0');
+            document.getElementById('cbt-timer-display').innerText = `${fmt(hrs)}:${fmt(mins)}:${fmt(secs)}`;
+        }
+
+        function renderCBTQuestion() {
+            const q = currentExam.questions[currentQuestionIndex];
+            document.getElementById('cbt-q-number').innerText = currentQuestionIndex + 1;
+            document.getElementById('cbt-q-subject-badge').innerText = q.subject;
+            document.getElementById('cbt-question-text').innerText = q.question;
+
+            const flaggedTag = document.getElementById('cbt-flagged-tag');
+            const flagBtn = document.getElementById('flag-btn');
+            if (flaggedQuestions[currentQuestionIndex]) {
+                flaggedTag.classList.remove('hidden');
+                flagBtn.className = "bg-amber-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition flex items-center gap-1.5";
+            } else {
+                flaggedTag.classList.add('hidden');
+                flagBtn.className = "bg-amber-100 text-amber-800 hover:bg-amber-200 text-xs font-bold py-2.5 px-4 rounded-xl transition flex items-center gap-1.5";
+            }
+
+            const container = document.getElementById('cbt-options-container');
+            container.innerHTML = '';
+            const selected = userAnswers[currentQuestionIndex];
+
+            ['A', 'B', 'C', 'D'].forEach(letter => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <input type="radio" id="opt-${letter}" name="cbt-opt" value="${letter}" ${selected === letter ? 'checked' : ''} onchange="selectAnswer('${letter}')" class="hidden cbt-option-radio">
+                    <label for="opt-${letter}" class="flex items-start gap-3 p-3.5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-emerald-300 transition text-xs text-slate-700">
+                        <span class="w-6 h-6 rounded-full bg-slate-100 font-bold text-xs flex items-center justify-center text-slate-600 flex-shrink-0">${letter}</span>
+                        <span class="leading-relaxed">${escapeHtml(q.options[letter])}</span>
+                    </label>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('cbt-prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('cbt-prev-btn').classList.toggle('opacity-50', currentQuestionIndex === 0);
+            renderPalette();
+        }
+
+        function selectAnswer(letter) {
+            userAnswers[currentQuestionIndex] = letter;
+            renderPalette();
+        }
+
+        function toggleFlagQuestion() {
+            if (flaggedQuestions[currentQuestionIndex]) {
+                delete flaggedQuestions[currentQuestionIndex];
+            } else {
+                flaggedQuestions[currentQuestionIndex] = true;
+            }
+            renderCBTQuestion();
+        }
+
+        function navQuestion(dir) {
+            const nextIdx = currentQuestionIndex + dir;
+            if (nextIdx >= 0 && nextIdx < currentExam.questions.length) {
+                currentQuestionIndex = nextIdx;
+                renderCBTQuestion();
+            } else if (nextIdx >= currentExam.questions.length) {
+                confirmSubmitExam();
+            }
+        }
+
+        function renderPalette() {
+            const grid = document.getElementById('cbt-palette-grid');
+            grid.innerHTML = '';
+            let answered = 0;
+
+            currentExam.questions.forEach((_, idx) => {
+                const isAns = userAnswers.hasOwnProperty(idx);
+                const isFlagged = flaggedQuestions[idx];
+                if (isAns) answered++;
+
+                const btn = document.createElement('button');
+                btn.onclick = () => { currentQuestionIndex = idx; renderCBTQuestion(); };
+
+                let cls = "bg-slate-100 text-slate-700 border-slate-200";
+                if (idx === currentQuestionIndex) cls = "bg-blue-600 text-white font-bold ring-2 ring-blue-300";
+                else if (isFlagged) cls = "bg-amber-500 text-white font-bold";
+                else if (isAns) cls = "bg-jamb-green text-white font-bold";
+
+                btn.className = `w-6 h-6 rounded palette-btn border flex items-center justify-center ${cls}`;
+                btn.innerText = idx + 1;
+                grid.appendChild(btn);
+            });
+
+            document.getElementById('palette-answered-count').innerText = answered;
+        }
+
+        function confirmSubmitExam() {
+            if (confirm("Submit your JAMB CBT exam now?")) finishExam();
+        }
+
+        function finishExam() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            const timeSpent = Math.max(1, Math.floor((Date.now() - examStartTime) / 1000));
+            const total = currentExam.questions.length;
+            let correct = 0;
+
+            currentExam.questions.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correct) correct++;
+            });
+
+            const pct = Math.round((correct / total) * 100);
+            const jambScaled = Math.round((correct / total) * 400);
+
+            document.getElementById('cbt-exam-room').classList.add('hidden');
+            document.getElementById('cbt-result-screen').classList.remove('hidden');
+
+            document.getElementById('result-jamb-scaled').innerText = `${jambScaled} / 400`;
+            document.getElementById('result-percent-text').innerText = `${pct}%`;
+            document.getElementById('result-time-text').innerText = `${Math.floor(timeSpent/60)}m ${timeSpent%60}s`;
+
+            const breakdown = document.getElementById('result-breakdown-list');
+            breakdown.innerHTML = '';
+
+            currentExam.questions.forEach((q, idx) => {
+                const userAns = userAnswers[idx] || 'None';
+                const isRight = userAns === q.correct;
+                const card = document.createElement('div');
+                card.className = "pt-4 first:pt-0 space-y-2 text-xs";
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="font-bold text-slate-800">Q${idx + 1} [${escapeHtml(q.subject)}]. ${escapeHtml(q.question)}</div>
+                        <span class="px-2 py-0.5 rounded font-bold uppercase text-[10px] ${isRight ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                            ${isRight ? 'Correct' : 'Incorrect'}
+                        </span>
+                    </div>
+                    <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200 text-emerald-900">
+                        <div class="font-bold mb-1">Your Pick: ${userAns} | Correct Answer: Option ${q.correct}</div>
+                        <p class="text-slate-700">${escapeHtml(q.explanation)}</p>
+                    </div>
+                `;
+                breakdown.appendChild(card);
+            });
+        }
+
+        function returnToLobby() {
+            document.getElementById('cbt-result-screen').classList.add('hidden');
+            document.getElementById('cbt-lobby').classList.remove('hidden');
+            renderAvailableLobbyQuizzes();
+        }
+
+        // UTILS
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            let bg = type === 'success' ? 'bg-jamb-green text-white' : (type === 'error' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white');
+            toast.className = `p-3.5 rounded-xl shadow-lg ${bg} text-xs font-semibold flex items-center justify-between pointer-events-auto transition duration-300`;
+            toast.innerHTML = `<span>${escapeHtml(msg)}</span><button onclick="this.parentElement.remove()" class="ml-3"><i class="fa-solid fa-xmark"></i></button>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        function downloadFile(content, fileName, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+    </script>
+</body>
+</html>
+```
